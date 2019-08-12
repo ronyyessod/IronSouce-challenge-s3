@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const shortid = require('shortid');
+const fs = require("fs");
 const fileController = require('../controllers/files');
 const { authenticate } = require('../middleware/authentication');
 
@@ -28,11 +29,11 @@ const upload = multer({storage: storage});
 router.post('/:username', upload.single("file"), authenticate, async function(request, response) {
     const file = {
         id: shortid.generate(),
-        name: `${request.body.user}_${request.file.originalname}`,
+        name: `${request.params.username}_${request.file.originalname}`,
         size: request.file.size,
         access: request.body.access,
         accessToken: request.header('x-access-token'),
-        path: `/uploads/${request.body.user}_${request.file.originalname}`
+        path: `/uploads/${request.params.username}_${request.file.originalname}`
     };
     const user = {
         name: request.params.username,
@@ -63,9 +64,9 @@ router.post('/:username', upload.single("file"), authenticate, async function(re
 
     all other constrains has been implemented.
  */
-router.get('/:username/:filename', async function(request, response) {
+router.get('/:username/:fileId', async function(request, response) {
     try {
-        const file = await fileController.getFileByName(request.params.filename);
+        const file = await fileController.getFileById(request.params.fileId);
         const user = {
             name: request.params.username,
             accessToken: request.header('x-access-token')
@@ -84,9 +85,9 @@ router.get('/:username/:filename', async function(request, response) {
 /*
     Update file access.
  */
-router.put('/:username/:filename/:access', async function(request, response) {
+router.put('/:username/:fileId/:access', async function(request, response) {
     try {
-        const file = await fileController.getFileByName(request.params.filename);
+        const file = await fileController.getFileById(request.params.fileId);
         const user = {
             name: request.params.username,
             accessToken: request.header('x-access-token')
@@ -100,6 +101,33 @@ router.put('/:username/:filename/:access', async function(request, response) {
         }
     } catch (e) {
         response.status(400).json({message: e})
+    }
+});
+
+/*
+    Delete file
+ */
+router.delete('/:username/:fileId', async function (request, response) {
+    try {
+        const file = await fileController.getFileById(request.params.fileId);
+        const user = {
+            name: request.params.username,
+            accessToken: request.header('x-access-token')
+        };
+        const res = await fileController.deleteFile(file, user);
+        if (res) {
+            fs.unlink(`${__dirname}/../${res.path}`, function (err) {
+                if (err) {
+                    response.status(500).json({message: err})
+                } else {
+                    response.send(res)
+                }
+            })
+        } else {
+            response.status(404).json({message: 'File not found'})
+        }
+    } catch (e) {
+        response.status(404).json({message: e})
     }
 });
 

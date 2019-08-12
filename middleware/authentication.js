@@ -2,7 +2,7 @@ const userActions = require('../models/users');
 
 async function authenticate(request, response, next) {
     const user = {
-        name: request.body.user,
+        name: request.params.username,
         accessToken: request.header('x-access-token')
     };
 
@@ -14,7 +14,7 @@ async function authenticate(request, response, next) {
     } else if (!user.name) {
         return response.status(400).json({
             success: false,
-            message: 'User name must be provided in the request body'
+            message: 'User name must be provided in the request params'
         })
     } else {
         try {

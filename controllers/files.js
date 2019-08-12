@@ -93,7 +93,7 @@ async function deleteFile(file, user) {
         if (isOwner && isExists && !isDeleted) {
             return await fileActions.deleteFile(file)
         } else {
-            console.error('Cannot delete file')
+            return null
         }
     } catch (e) {
         throw e

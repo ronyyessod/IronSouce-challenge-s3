@@ -73,17 +73,17 @@ function isFileDeleted(file) {
     const sql = `SELECT * FROM Files WHERE id = '${file.id}'`;
 
     return new Promise(function (resolve, reject) {
-        dbActions.db.get(sql, function (err) {
+        dbActions.db.get(sql, function (err, file_record) {
             if (err) {
                 reject(err)
             }
-            else if (file === undefined) {
+            else if (file_record === undefined) {
                 reject('Record does not exists')
             } else {
-                if (file.deletedAt === null) {
-                    resolve(true)
-                } else {
+                if (file_record.deleted_at === 'null') {
                     resolve(false)
+                } else {
+                    resolve(true)
                 }
             }
 
@@ -217,7 +217,7 @@ function deleteFile(file) {
                     size: file.size,
                     access: file.access,
                     path: file.path,
-                    deletedAt: file_record.deleted_at
+                    deletedAt: deletedAt
                 })
             }
         })
