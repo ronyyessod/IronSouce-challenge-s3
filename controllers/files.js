@@ -1,11 +1,11 @@
 const userActions = require('../models/users');
 const fileActions = require('../models/files');
 
-async function uploadFile(userName, accessToken, name, size, accessType, filePath) {
+async function uploadFile(user, file) {
     try {
-        const is_exists = await userActions.isUserExists(accessToken);
+        const is_exists = await userActions.isUserExists(user);
         if (is_exists) {
-            return await fileActions.addFile(userName, accessToken, name, size, accessType, filePath)
+            return await fileActions.addFile(user, file)
         } else {
             console.error('User is not supported')
         }
@@ -14,15 +14,15 @@ async function uploadFile(userName, accessToken, name, size, accessType, filePat
     }
 }
 
-async function downloadFile(fileId, accessToken) {
+async function downloadFile(file) {
     try {
-        const isOwner = await fileActions.isUserOwner(fileId, accessToken);
-        const isFileAccessible = await fileActions.isAccessible(fileId, accessToken);
-        const isExists = await fileActions.isFileExists(fileId);
-        const isDeleted = await fileActions.isFileDeleted(fileId);
+        const isOwner = await fileActions.isUserOwner(file);
+        const isFileAccessible = await fileActions.isAccessible(file);
+        const isExists = await fileActions.isFileExists(file);
+        const isDeleted = await fileActions.isFileDeleted(file);
 
         if ((isOwner || isFileAccessible) && isExists && !isDeleted) {
-            return await fileActions.getFile(fileId, accessToken).path
+            return await fileActions.getFile(file).path
         } else {
             console.error('File cannot be downloaded')
         }
@@ -32,14 +32,14 @@ async function downloadFile(fileId, accessToken) {
 
 }
 
-async function getFileMetadata(fileId, accessToken) {
+async function getFileMetadata(file) {
     try {
-        const isOwner = await fileActions.isUserOwner(fileId, accessToken);
-        const isFileAccessible = await fileActions.isAccessible(fileId, accessToken);
-        const isExists = await fileActions.isFileExists(fileId);
+        const isOwner = await fileActions.isUserOwner(file);
+        const isFileAccessible = await fileActions.isAccessible(file);
+        const isExists = await fileActions.isFileExists(file);
 
         if ((isOwner || isFileAccessible) && isExists) {
-            return await fileActions.getFileMetadata(fileId, accessToken)
+            return await fileActions.getFileMetadata(file)
         } else {
             console.error('Cannot get file metadata')
         }
@@ -49,17 +49,17 @@ async function getFileMetadata(fileId, accessToken) {
 
 }
 
-async function updateFileMetadata(fileId, accessToken, access) {
-    const accessLow = access.toLowerCase();
+async function updateFileMetadata(file) {
+    const accessLow = file.access.toLowerCase();
 
     try {
-        const isOwner = await fileActions.isUserOwner(fileId, accessToken);
-        const isExists = await fileActions.isFileExists(fileId);
-        const isDeleted = await fileActions.isFileDeleted(fileId);
+        const isOwner = await fileActions.isUserOwner(file);
+        const isExists = await fileActions.isFileExists(file);
+        const isDeleted = await fileActions.isFileDeleted(file);
         const isValid = ['private', 'public'].includes(accessLow);
 
         if (isOwner && isExists && !isDeleted && isValid) {
-            return await fileActions.updateFileAccess(fileId, accessLow, accessToken)
+            return await fileActions.updateFileAccess(file)
         } else {
             console.error('Cannot update file metadata')
         }
@@ -69,14 +69,14 @@ async function updateFileMetadata(fileId, accessToken, access) {
 
 }
 
-async function deleteFile(fileId, accessToken) {
+async function deleteFile(file) {
     try {
-        const isOwner = await fileActions.isUserOwner(fileId, accessToken);
-        const isExists = await fileActions.isFileExists(fileId);
-        const isDeleted = await fileActions.isFileDeleted(fileId);
+        const isOwner = await fileActions.isUserOwner(file);
+        const isExists = await fileActions.isFileExists(file);
+        const isDeleted = await fileActions.isFileDeleted(file);
 
         if (isOwner && isExists && !isDeleted) {
-            return await fileActions.deleteFile(fileId, accessToken)
+            return await fileActions.deleteFile(file)
         } else {
             console.error('Cannot delete file')
         }
@@ -92,10 +92,15 @@ async function getUser(request, response) {
         if (isex) {
             response.json(await userActions.getUserData(request.query.access_token));
         } else {
-            console.error('this is an error')
+            return response.status(400).json({
+                error: 'could not do it'
+            })
         }
     } catch (e) {
-        throw e
+        //throw e
+        return response.status(400).json({
+            error: e
+        })
     }
 }
 

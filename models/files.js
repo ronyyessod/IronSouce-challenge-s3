@@ -1,52 +1,62 @@
 const dbActions = require('./db');
-const shortid = require('shortid');
 
-function addFile(userName, accessToken, name, size, accessType, filePath) {
-    const fileId = shortid.generate();
+function addFile(user, file) {
     const createdAt = new Date();
     const updatedAt = null;
     const deletedAt = null;
-    const sql = `INSERT INTO Files VALUES ('${fileId}','${name}','${size}','${createdAt}', 
-        '${updatedAt}','${deletedAt}','${accessType}','${filePath}','${userName}','${accessToken}')`;
+    const sql = `INSERT INTO Files VALUES ('${file.id}','${file.name}','${file.size}','${createdAt}', 
+        '${updatedAt}','${deletedAt}','${file.access}','${file.path}','${user.name}','${user.accessToken}')`;
 
     return new Promise(function(resolve, reject) {
         dbActions.db.run(sql, function(err) {
             if (err) {
                 reject(err.message);
             } else {
-                resolve({id: fileId, path: filePath})
+                resolve({
+                    id: file.id,
+                    name: file.name,
+                    size: file.size,
+                    access: file.access,
+                    path: file.path
+                })
             }
         });
     });
 }
 
-function isUserOwner(fileId, accessToken) {
-    const sql = `SELECT * FROM Files WHERE id = '${fileId}' AND access_token = '${accessToken}'`;
+function isUserOwner(file) {
+    const sql = `SELECT * FROM Files WHERE id = '${file.id}' AND access_token = '${file.accessToken}'`;
 
     return new Promise(function (resolve, reject) {
-        dbActions.db.get(sql, function (err, file) {
+        dbActions.db.get(sql, function (err, file_record) {
             if (err) {
                 reject(err.message)
             }
             if (file === undefined) {
-                resolve({isOwner: false, file: file})
+                resolve({
+                    isOwner: false,
+                    file: file_record
+                })
             } else {
-                resolve({isOwner: true, file: file})
+                resolve({
+                    isOwner: true,
+                    file: file_record
+                })
             }
         })
     })
 }
 
-function isAccessible(fileId, accessToken) {
-    isUserOwner(fileId, accessToken).then(function (result) {
+function isAccessible(file) {
+    isUserOwner(file.id, file.accessToken).then(function (result) {
         const isOwner = result.isOwner;
         const access = result.file.access;
         return !(!isOwner && access === 'private');
     })
 }
 
-function isFileExists(fileId) {
-    const sql = `SELECT * FROM Files WHERE id = '${fileId}'`;
+function isFileExists(file) {
+    const sql = `SELECT * FROM Files WHERE id = '${file.id}'`;
 
     return new Promise(function (resolve, reject) {
         dbActions.get(sql, function (err) {
@@ -59,11 +69,11 @@ function isFileExists(fileId) {
     })
 }
 
-function isFileDeleted(fileId) {
-    const sql = `SELECT * FROM Files WHERE id = '${fileId}'`;
+function isFileDeleted(file) {
+    const sql = `SELECT * FROM Files WHERE id = '${file.id}'`;
 
     return new Promise(function (resolve, reject) {
-        dbActions.db.get(sql, function (err, file) {
+        dbActions.db.get(sql, function (err) {
             if (err) {
                 reject(err.message)
             }
@@ -81,65 +91,86 @@ function isFileDeleted(fileId) {
     })
 }
 
-function getFile(fileId, accessToken) {
-    const sql = `SELECT * FROM Files WHERE id = '${fileId} AND accessToken = '${accessToken}'`;
+function getFile(file) {
+    const sql = `SELECT * FROM Files WHERE id = '${file.id} AND accessToken = '${file.accessToken}'`;
 
     return new Promise(function (resolve, reject) {
-        dbActions.db.get(sql, function (err, file) {
+        dbActions.db.get(sql, function (err, file_record) {
             if (err) {
                 reject(err.message)
-            } else if (file === undefined) {
+            } else if (file_record === undefined) {
                 reject('File does not exists')
             } else {
-                resolve(file)
+                resolve(file_record)
             }
         })
     })
 
 }
 
-function getFileMetadata(fileId, accessToken) {
-    const sql = `SELECT * FROM Files WHERE id = '${fileId}' AND access_token = '${accessToken}'`;
+function getFileMetadata(file) {
+    const sql = `SELECT * FROM Files WHERE id = '${file.id}' AND access_token = '${file.accessToken}'`;
 
     return new Promise(function (resolve, reject) {
-        dbActions.db.get(sql, function (err, file) {
+        dbActions.db.get(sql, function (err, file_record) {
             if (err) {
                 reject(err.message)
             } else if (file === undefined) {
                 reject('File does not exists')
             } else {
-                resolve({name: file.name, size: file.size, createdAt: file.created_at,
-                        updatedAt: file.updated_at, deletedAt: file.deleted_at})
-                }
+                resolve({
+                    id: file.id,
+                    name: file.name,
+                    size: file.size,
+                    access: file.access,
+                    path: file.path,
+                    createdAt: file_record.created_at,
+                    updatedAt: file_record.updated_at,
+                    deletedAt: file_record.deleted_at
+                })
+            }
         })
     });
 }
 
-function updateFileAccess(fileId, access, accessToken) {
+function updateFileAccess(file) {
     const updatedAt = new Date();
-    const sql = `UPDATE Files SET access_type = '${access}', updated_at = '${updatedAt}' WHERE id = '${fileId}' AND access_token = '${accessToken}'`;
+    const sql = `UPDATE Files SET access_type = '${file.access}', updated_at = '${updatedAt}' WHERE id = '${file.id}' AND access_token = '${file.accessToken}'`;
 
     return new Promise(function (resolve, reject) {
         dbActions.db.run(sql, function (err) {
             if (err) {
                 reject(err.message)
             } else {
-                resolve({fileId: fileId, access: access, updatedAt: updatedAt})
+                resolve({
+                    id: file.id,
+                    name: file.name,
+                    size: file.size,
+                    access: file.access,
+                    path: file.path,
+                })
             }
         })
     })
 }
 
-function deleteFile(fileId, accessToken) {
+function deleteFile(file) {
     const deletedAt = new Date();
-    const sql = `UPDATE FILES set deleted_at = '${deletedAt}' WHERE id = '${fileId}' AND access_token = '${accessToken}'`;
+    const sql = `UPDATE FILES set deleted_at = '${deletedAt}' WHERE id = '${file.id}' AND access_token = '${file.accessToken}'`;
 
     return new Promise(function (resolve, reject) {
         dbActions.db.run(sql, function (err) {
             if (err) {
                 reject(err.message)
             } else {
-                resolve({fileId: fileId, deletedAt: deletedAt})
+                resolve({
+                    id: file.id,
+                    name: file.name,
+                    size: file.size,
+                    access: file.access,
+                    path: file.path,
+                    deletedAt: file_record.deleted_at
+                })
             }
         })
     })

@@ -12,6 +12,7 @@ const db = new sqlite3.Database(DB_PATH, function(err) {
     console.log('Connected to ' + DB_PATH + ' database.');
 });
 
+/*
 // Define scheme
 dbSchema = `CREATE TABLE IF NOT EXISTS Users (
         id varchar UNIQUE,
@@ -64,7 +65,10 @@ const db_action = function(sql) {
 db_action(user1_sql);
 db_action(user2_sql);
 
+ */
+
 const users_sql = `SELECT * FROM Users`;
+
 
 // Get users data for testing
 db.all(users_sql, [], function(err, rows) {
@@ -75,6 +79,18 @@ db.all(users_sql, [], function(err, rows) {
         console.log(row);
     });
 });
+
+
+
+// db.all(`SELECT * FROM Files`, [], function (err, rows) {
+//     if (err) {
+//         throw err;
+//     } else {
+//         rows.forEach(function (row) {
+//             console.log(row)
+//         })
+//     }
+// });
 
 /* Experimenting with Promise
 let getUserToken = function(username) {
