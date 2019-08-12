@@ -1,10 +1,8 @@
 const express = require("express");
-const postController = require("../controllers/files");
-
+const fileController = require("../controllers/files");
 const router = express.Router();
 
-// router.get("/", postController.getPosts);
-router.get("/", postController.getUser);
+router.get("/", fileController.getUser);
 
 module.exports = router;
 

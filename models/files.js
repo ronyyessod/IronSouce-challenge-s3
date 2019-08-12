@@ -24,14 +24,14 @@ function isUserOwner(fileId, accessToken) {
     const sql = `SELECT * FROM Files WHERE id = '${fileId}' AND access_token = '${accessToken}'`;
 
     return new Promise(function (resolve, reject) {
-        dbActions.db.get(sql, function (err, row) {
+        dbActions.db.get(sql, function (err, file) {
             if (err) {
                 reject(err.message)
             }
-            if (row === undefined) {
-                resolve({isOwner: false, row: row})
+            if (file === undefined) {
+                resolve({isOwner: false, file: file})
             } else {
-                resolve({isOwner: true, row: row})
+                resolve({isOwner: true, file: file})
             }
         })
     })
@@ -40,49 +40,93 @@ function isUserOwner(fileId, accessToken) {
 function isAccessible(fileId, accessToken) {
     isUserOwner(fileId, accessToken).then(function (result) {
         const isOwner = result.isOwner;
-        const access = result.row.access;
+        const access = result.file.access;
         return !(!isOwner && access === 'private');
     })
 }
 
-function getFileMetadata(fileId, accessToken) {
-    const sql = `SELECT * FROM Files as file WHERE file.id = '${fileId}' AND file.access_token = '${accessToken}'`;
+function isFileExists(fileId) {
+    const sql = `SELECT * FROM Files WHERE id = '${fileId}'`;
 
     return new Promise(function (resolve, reject) {
-        dbActions.db.get(sql, function (err, row) {
+        dbActions.get(sql, function (err) {
             if (err) {
-                reject(err.message)
+                reject(err)
             } else {
-                if (row.deletedAt === null) {
-                    resolve({name: row.name, size: row.size, createdAt: row.createdAt,
-                        updatedAt: row.updatedAt})
-                } else {
-                    resolve({name: row.name, size: row.size, createdAt: row.createdAt,
-                        updatedAt: row.updatedAt, deletedAt: row.deleteAt})
-                }
+                resolve(true)
             }
         })
     })
+}
+
+function isFileDeleted(fileId) {
+    const sql = `SELECT * FROM Files WHERE id = '${fileId}'`;
+
+    return new Promise(function (resolve, reject) {
+        dbActions.db.get(sql, function (err, file) {
+            if (err) {
+                reject(err.message)
+            }
+            else if (file === undefined) {
+                reject('Record does not exists')
+            } else {
+                if (file.deletedAt === null) {
+                    resolve(true)
+                } else {
+                    resolve(false)
+                }
+            }
+
+        })
+    })
+}
+
+function getFile(fileId, accessToken) {
+    const sql = `SELECT * FROM Files WHERE id = '${fileId} AND accessToken = '${accessToken}'`;
+
+    return new Promise(function (resolve, reject) {
+        dbActions.db.get(sql, function (err, file) {
+            if (err) {
+                reject(err.message)
+            } else if (file === undefined) {
+                reject('File does not exists')
+            } else {
+                resolve(file)
+            }
+        })
+    })
+
+}
+
+function getFileMetadata(fileId, accessToken) {
+    const sql = `SELECT * FROM Files WHERE id = '${fileId}' AND access_token = '${accessToken}'`;
+
+    return new Promise(function (resolve, reject) {
+        dbActions.db.get(sql, function (err, file) {
+            if (err) {
+                reject(err.message)
+            } else if (file === undefined) {
+                reject('File does not exists')
+            } else {
+                resolve({name: file.name, size: file.size, createdAt: file.created_at,
+                        updatedAt: file.updated_at, deletedAt: file.deleted_at})
+                }
+        })
+    });
 }
 
 function updateFileAccess(fileId, access, accessToken) {
     const updatedAt = new Date();
     const sql = `UPDATE Files SET access_type = '${access}', updated_at = '${updatedAt}' WHERE id = '${fileId}' AND access_token = '${accessToken}'`;
 
-    isUserOwner(fileId, accessToken).then(function (result) {
-        if (result.isOwner) {
-            return new Promise(function (resolve, reject) {
-                dbActions.db.run(sql, function (err) {
-                    if (err) {
-                        reject(err.message)
-                    } else {
-                        resolve({fileId: fileId, access: access, updatedAt: updatedAt})
-                    }
-                })
-            })
-        } else {
-            console.log('User is not an owner of the file')
-        }
+    return new Promise(function (resolve, reject) {
+        dbActions.db.run(sql, function (err) {
+            if (err) {
+                reject(err.message)
+            } else {
+                resolve({fileId: fileId, access: access, updatedAt: updatedAt})
+            }
+        })
     })
 }
 
@@ -90,20 +134,14 @@ function deleteFile(fileId, accessToken) {
     const deletedAt = new Date();
     const sql = `UPDATE FILES set deleted_at = '${deletedAt}' WHERE id = '${fileId}' AND access_token = '${accessToken}'`;
 
-    isUserOwner(fileId, accessToken).then(function (result) {
-        if (result.isOwner) {
-            return new Promise(function (resolve, reject) {
-                dbActions.db.run(sql, function (err) {
-                    if (err) {
-                        reject(err.message)
-                    } else {
-                        resolve({fileId: fileId, deletedAt: deletedAt})
-                    }
-                })
-            })
-        } else {
-            console.log('User is not an owner of the file')
-        }
+    return new Promise(function (resolve, reject) {
+        dbActions.db.run(sql, function (err) {
+            if (err) {
+                reject(err.message)
+            } else {
+                resolve({fileId: fileId, deletedAt: deletedAt})
+            }
+        })
     })
 }
 
@@ -114,5 +152,8 @@ module.exports = {
     isAccessible,
     getFileMetadata,
     updateFileAccess,
-    deleteFile
+    deleteFile,
+    isFileExists,
+    isFileDeleted,
+    getFile,
 };
