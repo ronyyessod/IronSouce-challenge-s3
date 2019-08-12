@@ -1,0 +1,390 @@
+{
+	"info": {
+		"_postman_id": "81726cb1-fab0-41c7-9bcc-84aeccff02fd",
+		"name": "IronSource",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user1 - upload private",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"description": "user1",
+						"key": "x-access-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoicUF6ZWYzMkYifSwiaWF0IjoxNTY1NTMyNzY3fQ.9jk4I7gySP31XBnYMPSklhl8LPPj8cZw1sWZuDUUdWg"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "access",
+							"value": "private",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/ryessod/Downloads/hospital_1_Patient.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/user1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user2 - upload public",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiaFQ5TG1keCJ9LCJpYXQiOjE1NjU1MzI3Njd9.-43rk4JwsgjkZIk-KJXzWdQbKuW2d0arb4sXVN2gX_Y",
+						"description": "user2",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "access",
+							"value": "public",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/ryessod/Downloads/image_1"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/user2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user2 - upload private",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"description": "user2",
+						"key": "x-access-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiaFQ5TG1keCJ9LCJpYXQiOjE1NjU1MzI3Njd9.-43rk4JwsgjkZIk-KJXzWdQbKuW2d0arb4sXVN2gX_Y"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "access",
+							"value": "private",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/ryessod/Downloads/hospital_1_Patient.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8080/user2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user1 - download private",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoicUF6ZWYzMkYifSwiaWF0IjoxNTY1NTMyNzY3fQ.9jk4I7gySP31XBnYMPSklhl8LPPj8cZw1sWZuDUUdWg",
+						"description": "user1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8080/user1/IYXc07KUy",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user1",
+						"IYXc07KUy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user1 - download public",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"description": "user1",
+						"key": "x-access-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoicUF6ZWYzMkYifSwiaWF0IjoxNTY1NTMyNzY3fQ.9jk4I7gySP31XBnYMPSklhl8LPPj8cZw1sWZuDUUdWg"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8080/user1/tRiEt9KcY",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user1",
+						"tRiEt9KcY"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user1 - download file does not exists",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"description": "user1",
+						"key": "x-access-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoicUF6ZWYzMkYifSwiaWF0IjoxNTY1NTMyNzY3fQ.9jk4I7gySP31XBnYMPSklhl8LPPj8cZw1sWZuDUUdWg"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8080/user1/user2_image_11",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user1",
+						"user2_image_11"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user2 - download public",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"description": "user2",
+						"key": "x-access-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiaFQ5TG1keCJ9LCJpYXQiOjE1NjU1MzI3Njd9.-43rk4JwsgjkZIk-KJXzWdQbKuW2d0arb4sXVN2gX_Y"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8080/user2/tRiEt9KcY",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user2",
+						"tRiEt9KcY"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user2 - update access to public",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"description": "user2",
+						"key": "x-access-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiaFQ5TG1keCJ9LCJpYXQiOjE1NjU1MzI3Njd9.-43rk4JwsgjkZIk-KJXzWdQbKuW2d0arb4sXVN2gX_Y"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8080/user2/ZW2ozGVAA/public",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user2",
+						"ZW2ozGVAA",
+						"public"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user2 - access to user1 private",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"description": "user2",
+						"key": "x-access-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiaFQ5TG1keCJ9LCJpYXQiOjE1NjU1MzI3Njd9.-43rk4JwsgjkZIk-KJXzWdQbKuW2d0arb4sXVN2gX_Y"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8080/user2/IYXc07KUy/public",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user2",
+						"IYXc07KUy",
+						"public"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user1 - delete own file",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"description": "user1",
+						"key": "x-access-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoicUF6ZWYzMkYifSwiaWF0IjoxNTY1NTMyNzY3fQ.9jk4I7gySP31XBnYMPSklhl8LPPj8cZw1sWZuDUUdWg"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8080/user1/IYXc07KUy",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user1",
+						"IYXc07KUy"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "user1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user1 - delete user2 file",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"description": "user1",
+						"key": "x-access-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoicUF6ZWYzMkYifSwiaWF0IjoxNTY1NTMyNzY3fQ.9jk4I7gySP31XBnYMPSklhl8LPPj8cZw1sWZuDUUdWg"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "localhost:8080/user1/tRiEt9KcY",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user1",
+						"tRiEt9KcY"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
