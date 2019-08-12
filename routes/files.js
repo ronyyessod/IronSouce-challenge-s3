@@ -10,29 +10,61 @@ const storage = multer.diskStorage({
         cb(null, 'uploads')
     },
     filename: function (request, file, cb) {
-        cb(null, `${request.body.user}_${file.originalname}`)
+        cb(null, `${request.params.username}_${file.originalname}`)
     }
 });
 const upload = multer({storage: storage});
 
-//router.get('/', fileController.getUser);
+/*
+    Upload file request.
+    Every request must include the following:
+    1. access token - sent in a header called "x-access-token"
+    2. username - sent in the body as a key called "user"
 
-router.post('/', upload.single("file"), authenticate, async function(request, response) {
+    An upload request must also include a file to upload as a key in the body called "file".
+
+    If a user did not sent any specific file access, access is set to "public"
+
+    TODO: I could have validated the file access here OR in uploadFile
+ */
+router.post('/:username', upload.single("file"), authenticate, async function(request, response) {
     const file = {
         id: shortid.generate(),
         name: `${request.body.user}_${request.file.originalname}`,
         size: request.file.size,
-        access: request.body.access,
+        access: request.body.access || 'public',
         accessToken: request.header('x-access-token'),
         path: `/uploads/${request.body.user}_${request.file.originalname}`
     };
     const user = {
-        name: request.body.user,
+        name: request.params.username,
         accessToken: request.header('x-access-token')
     };
     try {
         const res = await fileController.uploadFile(user, file);
         response.send(res)
+    } catch (e) {
+        response.status(500).json({message: e})
+    }
+});
+
+
+/*
+    Download file request.
+ */
+router.get('/:username/:filename', async function(request, response) {
+    try {
+        const file = await fileController.getFileByName(request.params.filename);
+        const user = {
+            name: request.params.username,
+            accessToken: request.header('x-access-token')
+        };
+        const path = await fileController.downloadFile(file, user);
+        if (path) {
+            return response.download(`${__dirname}/../${path}`)
+        } else {
+            response.status(400).json({message: 'Bad request, you are not permitted to access file'})
+        }
     } catch (e) {
         response.status(500).json({message: e})
     }

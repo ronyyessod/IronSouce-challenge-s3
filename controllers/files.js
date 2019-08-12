@@ -14,17 +14,34 @@ async function uploadFile(user, file) {
     }
 }
 
-async function downloadFile(file) {
+async function getFileByName(fileName) {
     try {
-        const isOwner = await fileActions.isUserOwner(file);
-        const isFileAccessible = await fileActions.isAccessible(file);
-        const isExists = await fileActions.isFileExists(file);
+        return await fileActions.getFileByName(fileName);
+    } catch (e) {
+        throw e
+    }
+}
+
+async function getFileById(fileId) {
+    try {
+        return await fileActions.getFileById(fileId);
+    } catch (e) {
+        throw e
+    }
+}
+
+async function downloadFile(file, user) {
+    try {
+        const isOwner = await fileActions.isUserOwner(file, user);
+        console.log("owner " + isOwner);
+        const isFileAccessible = await fileActions.isAccessible(file, user);
+        console.log('accesible ' + isFileAccessible);
         const isDeleted = await fileActions.isFileDeleted(file);
 
-        if ((isOwner || isFileAccessible) && isExists && !isDeleted) {
-            return await fileActions.getFile(file).path
+        if ((isOwner || isFileAccessible) && !isDeleted) {
+            return file.path
         } else {
-            console.error('File cannot be downloaded')
+            return null
         }
     } catch (e) {
         throw e
@@ -32,10 +49,10 @@ async function downloadFile(file) {
 
 }
 
-async function getFileMetadata(file) {
+async function getFileMetadata(file, user) {
     try {
-        const isOwner = await fileActions.isUserOwner(file);
-        const isFileAccessible = await fileActions.isAccessible(file);
+        const isOwner = await fileActions.isUserOwner(file, user);
+        const isFileAccessible = await fileActions.isAccessible(file, user);
         const isExists = await fileActions.isFileExists(file);
 
         if ((isOwner || isFileAccessible) && isExists) {
@@ -49,11 +66,11 @@ async function getFileMetadata(file) {
 
 }
 
-async function updateFileMetadata(file) {
+async function updateFileMetadata(file, user) {
     const accessLow = file.access.toLowerCase();
 
     try {
-        const isOwner = await fileActions.isUserOwner(file);
+        const isOwner = await fileActions.isUserOwner(file, user);
         const isExists = await fileActions.isFileExists(file);
         const isDeleted = await fileActions.isFileDeleted(file);
         const isValid = ['private', 'public'].includes(accessLow);
@@ -69,9 +86,9 @@ async function updateFileMetadata(file) {
 
 }
 
-async function deleteFile(file) {
+async function deleteFile(file, user) {
     try {
-        const isOwner = await fileActions.isUserOwner(file);
+        const isOwner = await fileActions.isUserOwner(file, user);
         const isExists = await fileActions.isFileExists(file);
         const isDeleted = await fileActions.isFileDeleted(file);
 
@@ -111,4 +128,6 @@ module.exports = {
     updateFileMetadata,
     deleteFile,
     getUser,
+    getFileByName,
+    getFileById
 };
