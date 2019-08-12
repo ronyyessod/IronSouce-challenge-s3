@@ -23,8 +23,6 @@ const upload = multer({storage: storage});
 
     An upload request must also include a file to upload as a key in the body called "file".
 
-    If a user did not sent any specific file access, access is set to "public"
-
     TODO: I could have validated the file access here OR in uploadFile
  */
 router.post('/:username', upload.single("file"), authenticate, async function(request, response) {
@@ -32,7 +30,7 @@ router.post('/:username', upload.single("file"), authenticate, async function(re
         id: shortid.generate(),
         name: `${request.body.user}_${request.file.originalname}`,
         size: request.file.size,
-        access: request.body.access || 'public',
+        access: request.body.access,
         accessToken: request.header('x-access-token'),
         path: `/uploads/${request.body.user}_${request.file.originalname}`
     };
@@ -51,6 +49,19 @@ router.post('/:username', upload.single("file"), authenticate, async function(re
 
 /*
     Download file request.
+
+    TODO: I implemented differently:
+    1. access token is being passed in every single request for authentication, hence I found it to be redundant
+    to send it again as a query param.
+    2. due to 1, I supported validation in downloadFile function.
+    3. my implementation forces you to send your username as request parameter (as seen in the following request)
+    meaning that if you are user1 and wants to download a public file of user2, you need to:
+    /user1/<user2_public_file_name>
+
+    I could have done a better job implementing status code returns, so it'll be more according to RESTful API
+    conventions.
+
+    all other constrains has been implemented.
  */
 router.get('/:username/:filename', async function(request, response) {
     try {
@@ -66,7 +77,29 @@ router.get('/:username/:filename', async function(request, response) {
             response.status(400).json({message: 'Bad request, you are not permitted to access file'})
         }
     } catch (e) {
-        response.status(500).json({message: e})
+        response.status(404).json({message: e})
+    }
+});
+
+/*
+    Update file access.
+ */
+router.put('/:username/:filename/:access', async function(request, response) {
+    try {
+        const file = await fileController.getFileByName(request.params.filename);
+        const user = {
+            name: request.params.username,
+            accessToken: request.header('x-access-token')
+        };
+        const access = request.params.access;
+        const res = await fileController.updateFileMetadata(file, user, access);
+        if (res) {
+            response.send(res)
+        } else {
+            response.status(400).json({message: 'Bad request, you are not permitted to access file'})
+        }
+    } catch (e) {
+        response.status(400).json({message: e})
     }
 });
 

@@ -12,7 +12,6 @@ const db = new sqlite3.Database(DB_PATH, function(err) {
     console.log('Connected to ' + DB_PATH + ' database.');
 });
 
-/*
 // Define scheme
 dbSchema = `CREATE TABLE IF NOT EXISTS Users (
         id varchar UNIQUE,
@@ -42,11 +41,13 @@ db.exec(dbSchema, function(err) {
 // Define users
 const user1Id = 'qAzef32F';
 const user1Name = 'user1';
-const user1Token = jwt_generator(user1Id);
+// const user1Token = jwt_generator(user1Id);
+const user1Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoicUF6ZWYzMkYifSwiaWF0IjoxNTY1NTMyNzY3fQ.9jk4I7gySP31XBnYMPSklhl8LPPj8cZw1sWZuDUUdWg';
 
 const user2Id = 'hT9Lmdx';
 const user2Name = 'user2';
-const user2Token = jwt_generator(user2Id);
+// const user2Token = jwt_generator(user2Id);
+const user2Token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiaFQ5TG1keCJ9LCJpYXQiOjE1NjU1MzI3Njd9.-43rk4JwsgjkZIk-KJXzWdQbKuW2d0arb4sXVN2gX_Y';
 
 // Define sql to insert users
 const user1_sql = `INSERT INTO Users VALUES ('${user1Id}','${user1Name}','${user1Token}')`;
@@ -65,13 +66,8 @@ const db_action = function(sql) {
 db_action(user1_sql);
 db_action(user2_sql);
 
- */
-
-const users_sql = `SELECT * FROM Users`;
-
-
-// Get users data for testing
-db.all(users_sql, [], function(err, rows) {
+/*
+db.all(`SELECT * FROM Users`, [], function(err, rows) {
     if (err) {
         throw err;
     }
@@ -80,38 +76,18 @@ db.all(users_sql, [], function(err, rows) {
     });
 });
 
+ */
 
 
-// db.all(`SELECT * FROM Files`, [], function (err, rows) {
-//     if (err) {
-//         throw err;
-//     } else {
-//         rows.forEach(function (row) {
-//             console.log(row)
-//         })
-//     }
-// });
-
-/* Experimenting with Promise
-let getUserToken = function(username) {
-    return new Promise(function(resolve, reject) {
-        const sql = `SELECT * FROM Users as user WHERE user.name = '${username}'`;
-        //const sql = `SELECT * FROM Users`;
-        db.get(sql, function (err, row) {
-            if (err) {
-                reject(err.message)
-            } else {
-                let single_row = {id: row.id, username: row.name, token: row.access_token};
-                //let rows_obj = {statement: this, rows: rows};
-                resolve(single_row);
-            }
+/*
+db.all(`SELECT * FROM Files`, [], function (err, rows) {
+    if (err) {
+        throw err;
+    } else {
+        rows.forEach(function (row) {
+            console.log(row)
         })
-    })
-};
-
-user_data = getUserToken('user1');
-user_data.then(function (result) {
-    console.log(result)
+    }
 });
 
  */

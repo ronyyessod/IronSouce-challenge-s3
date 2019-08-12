@@ -59,7 +59,7 @@ function isFileExists(file) {
     const sql = `SELECT * FROM Files WHERE id = '${file.id}'`;
 
     return new Promise(function (resolve, reject) {
-        dbActions.get(sql, function (err) {
+        dbActions.db.get(sql, function (err) {
             if (err) {
                 reject(err)
             } else {
@@ -180,9 +180,9 @@ function getFileMetadata(file) {
     });
 }
 
-function updateFileAccess(file) {
+function updateFileAccess(file, access) {
     const updatedAt = new Date();
-    const sql = `UPDATE Files SET access_type = '${file.access}', updated_at = '${updatedAt}' WHERE id = '${file.id}' AND access_token = '${file.accessToken}'`;
+    const sql = `UPDATE Files SET access_type = '${access}', updated_at = '${updatedAt}' WHERE id = '${file.id}' AND access_token = '${file.accessToken}'`;
 
     return new Promise(function (resolve, reject) {
         dbActions.db.run(sql, function (err) {
@@ -193,7 +193,8 @@ function updateFileAccess(file) {
                     id: file.id,
                     name: file.name,
                     size: file.size,
-                    access: file.access,
+                    prev_access: file.access,
+                    new_access: access,
                     path: file.path,
                 })
             }

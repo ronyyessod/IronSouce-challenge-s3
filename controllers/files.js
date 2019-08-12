@@ -33,9 +33,7 @@ async function getFileById(fileId) {
 async function downloadFile(file, user) {
     try {
         const isOwner = await fileActions.isUserOwner(file, user);
-        console.log("owner " + isOwner);
         const isFileAccessible = await fileActions.isAccessible(file, user);
-        console.log('accesible ' + isFileAccessible);
         const isDeleted = await fileActions.isFileDeleted(file);
 
         if ((isOwner || isFileAccessible) && !isDeleted) {
@@ -66,8 +64,8 @@ async function getFileMetadata(file, user) {
 
 }
 
-async function updateFileMetadata(file, user) {
-    const accessLow = file.access.toLowerCase();
+async function updateFileMetadata(file, user, access) {
+    const accessLow = access.toLowerCase();
 
     try {
         const isOwner = await fileActions.isUserOwner(file, user);
@@ -76,9 +74,9 @@ async function updateFileMetadata(file, user) {
         const isValid = ['private', 'public'].includes(accessLow);
 
         if (isOwner && isExists && !isDeleted && isValid) {
-            return await fileActions.updateFileAccess(file)
+            return await fileActions.updateFileAccess(file, access)
         } else {
-            console.error('Cannot update file metadata')
+            return null
         }
     } catch (e) {
         throw e
